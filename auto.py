@@ -54,7 +54,6 @@ time.sleep(5)
 
 # print(resultado)
 
-print(pd.read_html('https://docs.microsoft.com/en-us/rest/api/power-bi/available-features/get-available-features#code-try-0'))
 
 # div = nav.find_elements_by_xpath('//*[@id="action-panel"]/div/form/div[3]/div[2]')
 
