@@ -114,7 +114,7 @@ if uso_atual >= 65:
     import sender
     sender    
 else:
-    print(f'\nO Uso do Recurso Está em {uso_atual}')  
+    print(f'\nO Uso do Recurso Está em {uso_atual}%')  
 
 print()
 print('PROCESSO COMPLETO CONCLUÍDO')
