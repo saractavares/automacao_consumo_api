@@ -5,6 +5,7 @@ import pandas as pd
 import pyodbc
 import time
 
+
 # Conectando ao banco e conferindo Conta Ativa
 try:
     con = pyodbc.connect(
@@ -23,15 +24,15 @@ for i in range(len(base)):
 
 login = usuario
 passw = senha
+print('fez as querys')
 
 def extract():
 
-    # abrir navegador
-    options = Options()
-    options.binary_location = "/usr/bin/chrome/chrome.exe"
-    nav = webdriver.Chrome(
-        chrome_options=options, executable_path="/usr/bin/chromedriver/chromedriver.exe")
-
+    chrome_options = Options()
+    chrome_options.add_argument('--headless')
+    chrome_options.add_argument('--no-sandbox')
+    chrome_options.add_argument('--disable-dev-shm-usage')
+    nav = webdriver.Chrome('/usr/bin/chromedriver',chrome_options=chrome_options)
     nav.get(
         'https://docs.microsoft.com/en-us/rest/api/power-bi/available-features/get-available-features#code-try-0')
 
