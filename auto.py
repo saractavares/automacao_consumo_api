@@ -28,9 +28,9 @@ def extract():
 
     # abrir navegador
     options = Options()
-    options.binary_location = "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"
+    options.binary_location = "/usr/bin/chrome/chrome.exe"
     nav = webdriver.Chrome(
-        chrome_options=options, executable_path="C:\\ChromeDriver\\chromedriver.exe")
+        chrome_options=options, executable_path="/usr/bin/chromedriver/chromedriver.exe")
 
     nav.get(
         'https://docs.microsoft.com/en-us/rest/api/power-bi/available-features/get-available-features#code-try-0')
