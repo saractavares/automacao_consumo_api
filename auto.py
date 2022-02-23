@@ -24,7 +24,6 @@ for i in range(len(base)):
 
 login = usuario
 passw = senha
-print('fez as querys')
 
 def extract():
 
