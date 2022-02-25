@@ -88,12 +88,19 @@ def extract():
 
     # Cursor para o banco
     cursor = con.cursor()
-    insert_str = """INSERT INTO dbo.CONSUMO_API_RECURSO(nome,uso,data_atual)
-        values(?,?,?)"""
-    cursor.fast_executemany = True
-    cursor.executemany(insert_str,  tb_consumo.values.tolist())
-    con.commit()
-    # con.close()
+    query = """SELECT TOP 1 [uso] FROM [dbo].[CONSUMO_API_RECURSO] ORDER BY data_atual DESC"""
+    bd = pd.read_sql_query(query, con)
+    for i in range(len(bd)):
+        uso_ontem = str(bd.uso[i].strip())
+        uso_ontem = int(uso_ontem)
+        uso_hoje = int(df_uso)
+        if uso_hoje > uso_ontem:
+        
+            insert_str = """INSERT INTO dbo.CONSUMO_API_RECURSO(nome,uso,data_atual)
+                values(?,?,?)"""
+            cursor.fast_executemany = True
+            cursor.executemany(insert_str,  tb_consumo.values.tolist())
+            con.commit()
     print(
         "******** RASPAGEM DO CONSUMO E ATUALIZAÇÃO DO BANCO DE DADOS CONCLUÍDA ********")
     print()
