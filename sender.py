@@ -10,7 +10,7 @@ con = pyodbc.connect(
     'DRIVER={ODBC Driver 17 for SQL Server};SERVER=tcp:f4f8ugzf66.database.windows.net;DATABASE=CONSUMO_DASH;UID=DataScience;PWD=brasil@1;Trusted_Connection=no')
 
 # cursor = con.cursor()
-query = """SELECT [nome],[uso],[data_atual] FROM [dbo].[CONSUMO_API_RECURSO] WHERE data_atual = CONVERT (DATE, SYSDATETIME())"""
+query = """SELECT TOP 1 [nome],[uso],[data_atual] FROM [dbo].[CONSUMO_API_RECURSO] ORDER BY data_atual DESC"""
 bd = pd.read_sql_query(query, con)
 
 
@@ -36,14 +36,14 @@ with app.app_context():
     app.config["MAIL_DEFAULT_SENDER"] = "apicrmconsumo@gmail.com"
     app.config["MAIL_MAX_EMAILS"] = 4
     app.config["MAIL_ASCII_ATTACHMENTS"] = True
-    app.config["MAIL_TO"] = ["luiz.felipe@crmeducacional.com"]
+    app.config["MAIL_TO"] = ["luiz.felipe@crmeducacional.com"] # 
 
     mail = Mail(app)
 
     msg = Message(" Report Diário do Consumo do Recurso",
                 recipients=app.config["MAIL_TO"])
 
-    msg.body = f'Olá, Luiz Felipe! \nO recurso de Dashboards da {conta} foi extraído em {data} e está em {uso}% !'
+    msg.body = f'Olá, equipe! \nO recurso de Dashboards da {conta} foi extraído em {data} e está em {uso}% !'
 
     mail.send(msg)
 

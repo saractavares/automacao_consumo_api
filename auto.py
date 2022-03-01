@@ -5,7 +5,6 @@ import pandas as pd
 import pyodbc
 import time
 
-
 # Conectando ao banco e conferindo Conta Ativa
 try:
     con = pyodbc.connect(
@@ -27,11 +26,14 @@ passw = senha
 
 def extract():
 
+    # abrir navegador
     chrome_options = Options()
     chrome_options.add_argument('--headless')
     chrome_options.add_argument('--no-sandbox')
     chrome_options.add_argument('--disable-dev-shm-usage')
-    nav = webdriver.Chrome('/usr/bin/chromedriver',chrome_options=chrome_options)
+    nav = webdriver.Chrome(
+        chrome_options=chrome_options, executable_path="/usr/bin/chromedriver")
+
     nav.get(
         'https://docs.microsoft.com/en-us/rest/api/power-bi/available-features/get-available-features#code-try-0')
 
@@ -101,6 +103,8 @@ def extract():
             cursor.fast_executemany = True
             cursor.executemany(insert_str,  tb_consumo.values.tolist())
             con.commit()
+        else:
+            print('\nUso não aumentou, não foi necessário novo registro no Banco\n')
     print(
         "******** RASPAGEM DO CONSUMO E ATUALIZAÇÃO DO BANCO DE DADOS CONCLUÍDA ********")
     print()
@@ -111,11 +115,11 @@ def extract():
 extract()
 
 # Conferindo se o uso chegou em 65% e se sim, mandar o email de aviso
-query = """SELECT [uso] FROM [dbo].[CONSUMO_API_RECURSO] WHERE data_atual = CONVERT (DATE, SYSDATETIME())"""
+query = """SELECT TOP 1 [uso] FROM [dbo].[CONSUMO_API_RECURSO] ORDER BY data_atual DESC"""
 bd = pd.read_sql_query(query, con)
 for i in range(len(bd)):
-        uso_atual = str(bd.uso[i].strip())
-        uso_atual = int(uso_atual)
+    uso_atual = str(bd.uso[i].strip())
+    uso_atual = int(uso_atual)
 
 if uso_atual >= 65:
     import sender
