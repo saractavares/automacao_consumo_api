@@ -26,92 +26,98 @@ passw = senha
 
 def extract():
 
+    try:
     # abrir navegador
-    chrome_options = Options()
-    chrome_options.add_argument('--headless')
-    chrome_options.add_argument('--no-sandbox')
-    chrome_options.add_argument('--disable-dev-shm-usage')
-    nav = webdriver.Chrome(
-        chrome_options=chrome_options, executable_path="/usr/bin/chromedriver")
+        chrome_options = Options()
+        chrome_options.binary_location = "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"
+        # chrome_options.add_argument('--headless')
+        # chrome_options.add_argument('--no-sandbox')
+        # chrome_options.add_argument('--disable-dev-shm-usage')
+        nav = webdriver.Chrome(
+            chrome_options=chrome_options, executable_path="C:\\ChromeDriver\\chromedriver.exe") # /usr/bin/chromedriver
 
-    nav.get(
-        'https://docs.microsoft.com/en-us/rest/api/power-bi/available-features/get-available-features#code-try-0')
+        nav.get(
+            'https://docs.microsoft.com/en-us/rest/api/power-bi/available-features/get-available-features#code-try-0')
 
-    time.sleep(3)
+        time.sleep(3)
 
-    # botão "sign in"
-    nav.find_element_by_xpath(
-        '//*[@id="action-panel"]/div/div/div/button').click()
+        # botão "sign in"
+        nav.find_element_by_xpath(
+            '//*[@id="action-panel"]/div/div/div/button').click()
 
-    time.sleep(3)
+        time.sleep(3)
 
-    # encontra campo, passa login e avança
-    nav.find_element_by_xpath('//*[@id="i0116"]').send_keys(f'{login}')
-    nav.find_element_by_xpath('//*[@id="idSIButton9"]').click()
+        # encontra campo, passa login e avança
+        nav.find_element_by_xpath('//*[@id="i0116"]').send_keys(f'{login}')
+        nav.find_element_by_xpath('//*[@id="idSIButton9"]').click()
 
-    time.sleep(3)
+        time.sleep(3)
 
-    # encontra campo, passa senha e avança
-    nav.find_element_by_xpath('//*[@id="i0118"]').send_keys(f'{passw}')
-    nav.find_element_by_xpath('//*[@id="idSIButton9"]').click()
+        # encontra campo, passa senha e avança
+        nav.find_element_by_xpath('//*[@id="i0118"]').send_keys(f'{passw}')
+        nav.find_element_by_xpath('//*[@id="idSIButton9"]').click()
 
-    time.sleep(3)
+        time.sleep(3)
 
-    # escolhe não continuar conectado
-    nav.find_element_by_xpath('//*[@id="idBtn_Back"]').click()
+        # escolhe não continuar conectado
+        nav.find_element_by_xpath('//*[@id="idBtn_Back"]').click()
 
-    time.sleep(3)
+        time.sleep(3)
 
-    # botão "try it"
-    nav.find_element_by_xpath(
-        '//*[@id="code-try-0"]/button[2]').click()
+        # botão "try it"
+        nav.find_element_by_xpath(
+            '//*[@id="code-try-0"]/button[2]').click()
 
-    time.sleep(3)
+        time.sleep(3)
 
-    # clica no botão "Run"
-    nav.find_element_by_xpath(
-        '//*[@id="action-panel"]/div/form/div[2]/div[5]/button').click()
+        # clica no botão "Run"
+        nav.find_element_by_xpath(
+            '//*[@id="action-panel"]/div/form/div[2]/div[5]/button').click()
 
-    time.sleep(3)
+        time.sleep(3)
 
-    # armazenando a % do consumo atual
-    uso = nav.find_element_by_xpath(
-        '/html/body/div[3]/div/form/div[3]/div[2]/pre/span/span[18]').text
+        # armazenando a % do consumo atual
+        uso = nav.find_element_by_xpath(
+            '/html/body/div[3]/div/form/div[3]/div[2]/pre/span/span[18]').text
 
-    time.sleep(3)
+        time.sleep(3)
 
-    # parâmetros para inserir dados na tabela de consumo
-    nome = conta
-    df_uso = uso
-    data_atual = date.today()
+        # parâmetros para inserir dados na tabela de consumo
+        nome = conta
+        df_uso = uso
+        data_atual = date.today()
 
-    uso = {'nome': [nome], 'uso': [df_uso], 'data_atual': [data_atual]}
-    tb_consumo = pd.DataFrame(uso)
+        uso = {'nome': [nome], 'uso': [df_uso], 'data_atual': [data_atual]}
+        tb_consumo = pd.DataFrame(uso)
 
-    # Cursor para o banco
-    cursor = con.cursor()
-    query = """SELECT TOP 1 [uso] FROM [dbo].[CONSUMO_API_RECURSO] ORDER BY data_atual DESC"""
-    bd = pd.read_sql_query(query, con)
-    for i in range(len(bd)):
-        uso_ontem = str(bd.uso[i].strip())
-        uso_ontem = int(uso_ontem)
-        uso_hoje = int(df_uso)
-        if uso_hoje > uso_ontem:
-        
-            insert_str = """INSERT INTO dbo.CONSUMO_API_RECURSO(nome,uso,data_atual)
-                values(?,?,?)"""
-            cursor.fast_executemany = True
-            cursor.executemany(insert_str,  tb_consumo.values.tolist())
-            con.commit()
-        else:
-            print('\nUso não aumentou, não foi necessário novo registro no Banco\n')
-    print(
-        "******** RASPAGEM DO CONSUMO E ATUALIZAÇÃO DO BANCO DE DADOS CONCLUÍDA ********")
-    print()
-    print('iniciando envio de email')
+        # Cursor para o banco
+        cursor = con.cursor()
+        query = """SELECT TOP 1 [uso] FROM [dbo].[CONSUMO_API_RECURSO] ORDER BY data_atual DESC"""
+        bd = pd.read_sql_query(query, con)
+        for i in range(len(bd)):
+            uso_ontem = str(bd.uso[i].strip())
+            uso_ontem = int(uso_ontem)
+            uso_hoje = int(df_uso)
+            if uso_hoje > uso_ontem:
+            
+                insert_str = """INSERT INTO dbo.CONSUMO_API_RECURSO(nome,uso,data_atual)
+                    values(?,?,?)"""
+                cursor.fast_executemany = True
+                cursor.executemany(insert_str,  tb_consumo.values.tolist())
+                con.commit()
+            else:
+                print('\nUso não aumentou, não foi necessário novo registro no Banco\n')
+        print(
+            "******** RASPAGEM DO CONSUMO E ATUALIZAÇÃO DO BANCO DE DADOS CONCLUÍDA ********")
+        print()
+        print('iniciando envio de email')
 
-    nav.close()
-    
+        nav.close()
+    except:
+        print('Entrou no except')
+        extract()
+        exit
+
 extract()
 
 # Conferindo se o uso chegou em 65% e se sim, mandar o email de aviso
