@@ -45,13 +45,13 @@ def extract():
         try:
             # abrir navegador
             chrome_options = Options()
-            chrome_options.binary_location = "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"
-            # chrome_options.add_argument('--headless')
-            # chrome_options.add_argument('--no-sandbox')
-            # chrome_options.add_argument('--disable-dev-shm-usage')
+            # chrome_options.binary_location = "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"
+            chrome_options.add_argument('--headless')
+            chrome_options.add_argument('--no-sandbox')
+            chrome_options.add_argument('--disable-dev-shm-usage')
             global nav
             nav = webdriver.Chrome(
-                chrome_options=chrome_options, executable_path="C:\\ChromeDriver\\chromedriver.exe") # /usr/bin/chromedriver
+                chrome_options=chrome_options, executable_path="/usr/bin/chromedriver") #  C:\\ChromeDriver\\chromedriver.exe
 
             nav.get(
                 'https://docs.microsoft.com/en-us/rest/api/power-bi/available-features/get-available-features#code-try-0')
