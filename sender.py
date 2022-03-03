@@ -36,7 +36,7 @@ with app.app_context():
     app.config["MAIL_DEFAULT_SENDER"] = "apicrmconsumo@gmail.com"
     app.config["MAIL_MAX_EMAILS"] = 4
     app.config["MAIL_ASCII_ATTACHMENTS"] = True
-    app.config["MAIL_TO"] = ["luiz.felipe@crmeducacional.com"] # 
+    app.config["MAIL_TO"] = ["luiz.felipe@crmeducacional.com"] #    sara.centeno@crmeducacional.com
 
     mail = Mail(app)
 

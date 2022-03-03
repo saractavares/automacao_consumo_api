@@ -1,8 +1,8 @@
-teste.py
-Documentacao
-Dockerfile
-.gitignore
-README.md 
+*teste.py
+*Documentacao
+*Dockerfile
+*.gitignore
+*README.md 
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
