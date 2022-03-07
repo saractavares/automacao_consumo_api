@@ -36,6 +36,6 @@ RUN pip install -r requirements.txt
 EXPOSE 80
 
 COPY . .
-CMD [ "python","auto.py" ]
+CMD [ "python","main.py" ]
 
 

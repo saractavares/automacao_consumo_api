@@ -5,40 +5,44 @@ import pandas as pd
 import pyodbc
 import time
 import logging
+# import sender
 
 
-logger = logging.getLogger(__name__)
-logging.basicConfig(filename='auto.log', level=logging.INFO, encoding='utf-8',
-                    filemode = 'w', format='%(asctime)s - %(levelname)s - %(name)s - %(message)s')
 
-def db_connect():
-# Conectando ao banco e conferindo Conta Ativa
-    try:
-        global con
-        con = pyodbc.connect(
-            'DRIVER={ODBC Driver 17 for SQL Server};SERVER=tcp:f4f8ugzf66.database.windows.net;DATABASE=CONSUMO_DASH;UID=DataScience;PWD=brasil@1;Trusted_Connection=no')
-        print('Conexão com banco estabelecida')
-    except:
-        logger.error('Conexão com o banco de dados perdida.')
-        print('Conexão com Banco Perdida')
-    else:    
-        query = """select nome, usuario, senha from CONTA_API_CONSUMO
-                where data_final is NULL;"""
-        base = pd.read_sql_query(query, con)
+class scrap_master():
 
-        for i in range(len(base)):
-            nome = str(base.nome[i].strip())
-            usuario = str(base.usuario[i].strip())
-            senha = str(base.senha[i].strip())
-
-        global login, passw, conta
-        login = usuario
-        passw = senha
-        conta = nome
     
-db_connect()
+    def db_connect():
 
-def extract():
+        global logger
+        logger = logging.getLogger(__name__)
+        logging.basicConfig(filename='auto.log', level=logging.INFO, encoding='utf-8',
+                            filemode = 'w', format='%(asctime)s - %(levelname)s - %(name)s - %(message)s')
+    # Conectando ao banco e conferindo Conta Ativa
+        try:
+            global con
+            con = pyodbc.connect(
+                'DRIVER={ODBC Driver 17 for SQL Server};SERVER=tcp:f4f8ugzf66.database.windows.net;DATABASE=CONSUMO_DASH;UID=DataScience;PWD=brasil@1;Trusted_Connection=no')
+            print('Conexão com banco estabelecida')
+        except:
+            logger.error('Conexão com o banco de dados perdida.')
+            print('Conexão com Banco Perdida')
+        else:    
+            query = """select nome, usuario, senha from CONTA_API_CONSUMO
+                    where data_final is NULL;"""
+            base = pd.read_sql_query(query, con)
+
+            for i in range(len(base)):
+                nome = str(base.nome[i].strip())
+                usuario = str(base.usuario[i].strip())
+                senha = str(base.senha[i].strip())
+
+            global login, passw, conta
+            login = usuario
+            passw = senha
+            conta = nome
+        
+
 
     def scrap():
 
@@ -51,7 +55,7 @@ def extract():
             chrome_options.add_argument('--disable-dev-shm-usage')
             global nav
             nav = webdriver.Chrome(
-                chrome_options=chrome_options, executable_path="/usr/bin/chromedriver") #  C:\\ChromeDriver\\chromedriver.exe
+                chrome_options=chrome_options, executable_path="/usr/bin/chromedriver") #   C:\\ChromeDriver\\chromedriver.exe   
 
             nav.get(
                 'https://docs.microsoft.com/en-us/rest/api/power-bi/available-features/get-available-features#code-try-0')
@@ -106,12 +110,12 @@ def extract():
 
         except:
             print('\nEntrou no except')
-            scrap()
+            time.sleep(3)
+            nav.close()
+            scrap_master.scrap()
             exit
-            logger.exception('XPath não encontrado. Processo reiniciado.')
+            logger.exception('XPath não encontrado. Processo reiniciado.')    
 
-    scrap()
-    
 
     def update_db():
         # parâmetros para inserir dados na tabela de consumo
@@ -143,23 +147,36 @@ def extract():
 
         nav.close()
 
-    update_db()
 
-extract()
+        print('\nIniciando SENDER\n')
+
 
 # Conferindo se o uso chegou em 65% e se sim, mandar o email de aviso
-query = """SELECT TOP 1 [uso] FROM [dbo].[CONSUMO_API_RECURSO] ORDER BY data_atual DESC"""
-bd = pd.read_sql_query(query, con)
-for i in range(len(bd)):
-    uso_atual = str(bd.uso[i].strip())
-    uso_atual = int(uso_atual)
+# def send_email():
 
-if uso_atual >= 65:
-    import sender
-    sender    
-else:
-    print(f'\nO Uso do Recurso Está em {uso_atual}%')  
 
-print()
-logger.info('Processo executado com sucesso.')
-print('PROCESSO COMPLETO CONCLUÍDO')
+#     query = """SELECT TOP 1 [uso] FROM [dbo].[CONSUMO_API_RECURSO] ORDER BY data_atual DESC"""
+#     bd = pd.read_sql_query(query, con)
+
+#     for i in range(len(bd)):
+#         uso_atual = str(bd.uso[i].strip())
+#         uso_atual = int(uso_atual)
+
+#     con.close()
+
+#     if uso_atual >= 65:
+        
+#         sender.Email.enviar_email()
+
+#     else:
+#         print(f'\nO Uso do Recurso Está em {uso_atual}%\n')  
+
+
+# def controller():
+
+#     db_connect()
+#     scrap()
+#     update_db()
+#     send_email()
+#     return True
+

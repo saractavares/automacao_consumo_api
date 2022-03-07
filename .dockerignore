@@ -3,6 +3,7 @@
 *Dockerfile
 *.gitignore
 *README.md 
+*.idea
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
