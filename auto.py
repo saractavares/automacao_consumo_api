@@ -37,69 +37,78 @@ class scrap_master():
                 usuario = str(base.usuario[i].strip())
                 senha = str(base.senha[i].strip())
 
-            global login, passw, conta
+            global login, passw, conta, site
             login = usuario
             passw = senha
             conta = nome
-        
+            site = 'https://docs.microsoft.com/en-us/rest/api/power-bi/available-features/get-available-features#code-try-0'
 
 
     def scrap():
+      
+        try:                 
 
-        try:
             # abrir navegador
             chrome_options = Options()
             # chrome_options.binary_location = "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"
             chrome_options.add_argument('--headless')
             chrome_options.add_argument('--no-sandbox')
             chrome_options.add_argument('--disable-dev-shm-usage')
+            chrome_options.add_experimental_option('excludeSwitches', ['enable-logging'])
             global nav
-            nav = webdriver.Chrome(
-                chrome_options=chrome_options, executable_path="/usr/bin/chromedriver") #   C:\\ChromeDriver\\chromedriver.exe   
 
-            nav.get(
-                'https://docs.microsoft.com/en-us/rest/api/power-bi/available-features/get-available-features#code-try-0')
+            from requests_futures.sessions import FuturesSession
 
+            
+            session = FuturesSession(max_workers = 100) 
+            global nav   
+            nav = session
+            nav = webdriver.Chrome( chrome_options=chrome_options,
+                executable_path="/usr/bin/chromedriver") #   C:\\ChromeDriver\\chromedriver.exe  
+            nav.get(site)
+            
             time.sleep(3)
 
             # botão "sign in"
-            nav.find_element_by_xpath(
-                '//*[@id="action-panel"]/div/div/div/button').click()
-
+            nav.find_element_by_xpath('//*[@id="action-panel"]/div/div/div/button').click()
+            print('clicou em sign in')
             time.sleep(3)
 
             # encontra campo, passa login e avança
             nav.find_element_by_xpath('//*[@id="i0116"]').send_keys(f'{login}')
             nav.find_element_by_xpath('//*[@id="idSIButton9"]').click()
+            print('mandou o loggin')
 
             time.sleep(3)
 
             # encontra campo, passa senha e avança
             nav.find_element_by_xpath('//*[@id="i0118"]').send_keys(f'{passw}')
             nav.find_element_by_xpath('//*[@id="idSIButton9"]').click()
+            print('mandou a senha')
 
             time.sleep(3)
 
             # escolhe não continuar conectado
             nav.find_element_by_xpath('//*[@id="idBtn_Back"]').click()
+            print('escolheu não ficar conectado')
 
             time.sleep(3)
 
             # botão "try it"
-            nav.find_element_by_xpath(
-                '//*[@id="code-try-0"]/button[2]').click()
+            nav.find_element_by_xpath('//*[@id="code-try-0"]/button[2]').click()
+            print('clicou em try it')
 
             time.sleep(3)
 
             # clica no botão "Run"
-            nav.find_element_by_xpath(
-                '//*[@id="action-panel"]/div/form/div[2]/div[5]/button').click()
+            nav.find_element_by_xpath('//*[@id="action-panel"]/div/form/div[2]/div[5]/button').click()
+            print('clicou em Run')
 
             time.sleep(3)
 
             # armazenando a % do consumo atual
-            uso = nav.find_element_by_xpath(
-                '/html/body/div[3]/div/form/div[3]/div[2]/pre/span/span[18]').text
+            uso = nav.find_element_by_xpath('/html/body/div[3]/div/form/div[3]/div[2]/pre/span/span[18]').text
+            print('Pegou o consumo')
 
             time.sleep(3)
 
@@ -113,9 +122,9 @@ class scrap_master():
             time.sleep(3)
             nav.close()
             scrap_master.scrap()
-            exit
             logger.exception('XPath não encontrado. Processo reiniciado.')    
 
+        
 
     def update_db():
         # parâmetros para inserir dados na tabela de consumo
@@ -138,45 +147,14 @@ class scrap_master():
                 cursor.fast_executemany = True
                 cursor.executemany(insert_str,  tb_consumo.values.tolist())
                 con.commit()
+                con.close()
             else:
                 print('\nUso não aumentou, não foi necessário novo registro no Banco\n')
         print(
             "******** RASPAGEM DO CONSUMO E ATUALIZAÇÃO DO BANCO DE DADOS CONCLUÍDA ********")
         print()
         print('iniciando envio de email')
-
-        nav.close()
-
-
         print('\nIniciando SENDER\n')
 
-
-# Conferindo se o uso chegou em 65% e se sim, mandar o email de aviso
-# def send_email():
-
-
-#     query = """SELECT TOP 1 [uso] FROM [dbo].[CONSUMO_API_RECURSO] ORDER BY data_atual DESC"""
-#     bd = pd.read_sql_query(query, con)
-
-#     for i in range(len(bd)):
-#         uso_atual = str(bd.uso[i].strip())
-#         uso_atual = int(uso_atual)
-
-#     con.close()
-
-#     if uso_atual >= 65:
-        
-#         sender.Email.enviar_email()
-
-#     else:
-#         print(f'\nO Uso do Recurso Está em {uso_atual}%\n')  
-
-
-# def controller():
-
-#     db_connect()
-#     scrap()
-#     update_db()
-#     send_email()
-#     return True
+        nav.close()
 

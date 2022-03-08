@@ -1,7 +1,5 @@
-from flask import Flask, request, redirect, send_from_directory, render_template, session, url_for, Response, flash
 from flask_mail import Mail, Message
 import pandas as pd
-import time
 import pyodbc
 from __main__ import app
 
@@ -30,7 +28,7 @@ class sender_email():
 
     def enviar_email():
 
-        print('Init DB d9 Sender')
+        print('Init DB do Sender')
 
         query = """SELECT TOP 1 [uso] FROM [dbo].[CONSUMO_API_RECURSO] ORDER BY data_atual DESC"""
         bd = pd.read_sql_query(query, con)
