@@ -50,7 +50,7 @@ class scrap_master():
 
             # abrir navegador
             chrome_options = Options()
-            # chrome_options.binary_location = "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"
+            # chrome_options.binary_location = "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"  ---> ambiente de teste no Windows, desabilitar as 3 chrome.options abaixo
             chrome_options.add_argument('--headless')
             chrome_options.add_argument('--no-sandbox')
             chrome_options.add_argument('--disable-dev-shm-usage')
@@ -64,7 +64,7 @@ class scrap_master():
             global nav   
             nav = session
             nav = webdriver.Chrome( chrome_options=chrome_options,
-                executable_path="/usr/bin/chromedriver") #   C:\\ChromeDriver\\chromedriver.exe  
+                executable_path="/usr/bin/chromedriver") #   C:\\ChromeDriver\\chromedriver.exe  ---> ambiente de teste Windows, trocar o path
             nav.get(site)
             
             time.sleep(3)

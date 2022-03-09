@@ -12,7 +12,7 @@ print('entrou na api flask')
 def principal():
     
     
-    return "<center><a href ='https://teste6.azurewebsites.net/api'><button type='button'><h2>Iniciar API</h2></button></a></center>"
+    return "<center><a href ='https://consumoapirecurso.azurewebsites.net/api'><button type='button'><h2>Iniciar API</h2></button></a></center>"
 
 
 @app.route('/api', methods=['GET','POST'])
