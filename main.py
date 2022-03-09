@@ -1,15 +1,11 @@
-from flask import Flask, Request, request, redirect, send_from_directory, render_template, session, url_for, Response, flash
+from flask import Flask
 import warnings
 
 
 warnings.filterwarnings("ignore")
 
 app = Flask(__name__)
-
-
-
 print('entrou na api flask')
-
 
 
 @app.route('/', methods=['GET','POST'])
@@ -38,9 +34,7 @@ def api_consumo():
     
     return "<center> <br> <h1>----- Fim do processo -----</h1> </br> <h3>Processo concluído</h3> <center>"
 
-
-  # debug=True, 
-    # app.run(debug=True)
+    # app.run(debug=True) ---> em ambiente local, deve usar nesse formato no build
 if __name__ == '__main__':
     from waitress import serve
     

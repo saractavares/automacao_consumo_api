@@ -35,7 +35,6 @@ class sender_email():
 
         for i in range(len(bd)):
 
-            # global uso_atual
             uso_atual = str(bd.uso[i].strip())
             uso_atual = int(uso_atual)
 
@@ -52,7 +51,7 @@ class sender_email():
             app.config["MAIL_DEFAULT_SENDER"] = "apicrmconsumo@gmail.com"
             app.config["MAIL_MAX_EMAILS"] = 4
             app.config["MAIL_ASCII_ATTACHMENTS"] = True
-            app.config["MAIL_TO"] = ["sara.centeno@crmeducacional.com"] # luiz.felipe@crmeducacional.com       analytics@crmeducacional.com
+            app.config["MAIL_TO"] = ["analytics@crmeducacional.com"] # sara.centeno@crmeducacional.com    
 
             mail = Mail(app)
 
@@ -63,18 +62,7 @@ class sender_email():
 
             mail.send(msg)
 
-            # time.sleep(3)
-
             print('Email Enviado')
 
         else:
             print(f'\nO Uso do Recurso Está em {uso_atual}%\n')  
-
-            
-
-    
-
-# def ret():
-#     return True
-
-# ret()
