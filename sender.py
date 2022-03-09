@@ -40,7 +40,7 @@ class sender_email():
 
         con.close()
 
-        if uso_atual >= 65:
+        if uso_atual >= 90:
                                     
             app.config["MAIL_SERVER"] = "smtp.gmail.com"
             app.config["MAIL_PORT"] = 587
