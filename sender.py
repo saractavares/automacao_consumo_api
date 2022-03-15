@@ -11,17 +11,17 @@ class sender_email():
         con = pyodbc.connect(
             'DRIVER={ODBC Driver 17 for SQL Server};SERVER=tcp:f4f8ugzf66.database.windows.net;DATABASE=CONSUMO_DASH;UID=DataScience;PWD=brasil@1;Trusted_Connection=no')
 
-        query = """SELECT TOP 1 [nome],[uso],[data_atual] FROM [dbo].[CONSUMO_API_RECURSO] ORDER BY data_atual DESC"""
+        query = """SELECT TOP 1 [nome],[uso],[data_atual] FROM [dbo].[CONSUMO_API_RECURSO] ORDER BY id DESC"""
         bd = pd.read_sql_query(query, con)
         
 
         for i in range(len(bd)):
-                global conta, uso, data
-                conta = str(bd.nome[i].strip())
-                uso = str(bd.uso[i].strip())
-                data = str(bd.data_atual[i])
+            global conta, uso, data
+            conta = str(bd.nome[i].strip())
+            uso = str(bd.uso[i].strip())
+            data = str(bd.data_atual[i])
 
-                print(conta, uso, data)
+            print(conta, uso, data)
 
         print('Peguei as credenciais')
 
@@ -30,7 +30,7 @@ class sender_email():
 
         print('Init DB do Sender')
 
-        query = """SELECT TOP 1 [uso] FROM [dbo].[CONSUMO_API_RECURSO] ORDER BY data_atual DESC"""
+        query = f"""SELECT TOP 1 [nome], [uso], [data_atual] FROM [dbo].[CONSUMO_API_RECURSO] WHERE nome = '{conta}' ORDER BY id DESC"""
         bd = pd.read_sql_query(query, con)
 
         for i in range(len(bd)):

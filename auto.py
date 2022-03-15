@@ -1,3 +1,4 @@
+from asyncio.windows_events import NULL
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from datetime import date
@@ -28,8 +29,7 @@ class scrap_master():
             logger.error('Conexão com o banco de dados perdida.')
             print('Conexão com Banco Perdida')
         else:    
-            query = """select nome, usuario, senha from CONTA_API_CONSUMO
-                    where data_final is NULL;"""
+            query = """select * from CONTA_API_CONSUMO where data_final is NULL """ #
             base = pd.read_sql_query(query, con)
 
             for i in range(len(base)):
@@ -42,7 +42,7 @@ class scrap_master():
             passw = senha
             conta = nome
             site = 'https://docs.microsoft.com/en-us/rest/api/power-bi/available-features/get-available-features#code-try-0'
-
+            print(login,passw,conta)
 
     def scrap():
       
@@ -50,7 +50,7 @@ class scrap_master():
 
             # abrir navegador
             chrome_options = Options()
-            # chrome_options.binary_location = "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"  ---> ambiente de teste no Windows, desabilitar as 3 chrome.options abaixo
+            chrome_options.binary_location = "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe" # ---> ambiente de teste no Windows, desabilitar as 3 chrome.options abaixo
             chrome_options.add_argument('--headless')
             chrome_options.add_argument('--no-sandbox')
             chrome_options.add_argument('--disable-dev-shm-usage')
@@ -63,8 +63,7 @@ class scrap_master():
             session = FuturesSession(max_workers = 100) 
             global nav   
             nav = session
-            nav = webdriver.Chrome( chrome_options=chrome_options,
-                executable_path="/usr/bin/chromedriver") #   C:\\ChromeDriver\\chromedriver.exe  ---> ambiente de teste Windows, trocar o path
+            nav = webdriver.Chrome( chrome_options=chrome_options,executable_path="C:\\ChromeDriver\\chromedriver.exe") # /usr/bin/chromedriver    ---> ambiente de teste Windows, trocar o path
             nav.get(site)
             
             time.sleep(3)
@@ -133,23 +132,58 @@ class scrap_master():
         tb_consumo = pd.DataFrame(uso)
 
         # Cursor para o banco
-        cursor = con.cursor()
-        query = """SELECT TOP 1 [uso] FROM [dbo].[CONSUMO_API_RECURSO] ORDER BY data_atual DESC"""
-        bd = pd.read_sql_query(query, con)
-        for i in range(len(bd)):
-            uso_ontem = str(bd.uso[i].strip())
-            uso_ontem = int(uso_ontem)
-            uso_hoje = int(df_uso)
-            if uso_hoje > uso_ontem:
+        try:
             
-                insert_str = """INSERT INTO dbo.CONSUMO_API_RECURSO(nome,uso,data_atual)
-                    values(?,?,?)"""
+            query = f"""SELECT COUNT(nome) as conta_nova FROM [dbo].[CONSUMO_API_RECURSO] WHERE nome =  '{conta}'"""
+            bd = pd.read_sql_query(query, con)
+            for i in range(len(bd)):
+                print('FOR do TRY')
+                qntd_registros = bd.conta_nova[i]
+                
+            if qntd_registros == 0:
+                # se a conta nunca teve registro de consumo:
+                cursor = con.cursor()
+                print('entrou no if == 0')
+                insert_str = """INSERT INTO dbo.CONSUMO_API_RECURSO(nome,uso,data_atual) values(?,?,?)"""
+                print('passou o insert')
+
                 cursor.fast_executemany = True
+                print('passou o fast')
+
                 cursor.executemany(insert_str,  tb_consumo.values.tolist())
+                print('passou o execute')
+            
                 con.commit()
+                print('passou o commit')
+
                 con.close()
+
             else:
-                print('\nUso não aumentou, não foi necessário novo registro no Banco\n')
+                # se a conta já tem registros de consumo anteriores
+                query = f"""SELECT top 1 nome, uso, data_atual FROM [dbo].[CONSUMO_API_RECURSO] WHERE nome = '{conta}' order by data_atual DESC"""
+                print("Fez a QUERY")        
+                bd = pd.read_sql_query(query, con)
+                
+                for i in range(len(bd)):
+                    print('FOR do TRY')
+                    uso_ontem = str(bd.uso[i].strip())
+                    uso_ontem = int(uso_ontem)
+                    uso_hoje = int(df_uso)
+
+                    if uso_hoje > uso_ontem :
+                       
+                        cursor = con.cursor()
+                        insert_str = """INSERT INTO dbo.CONSUMO_API_RECURSO(nome,uso,data_atual) values(?,?,?)"""
+                        cursor.fast_executemany = True
+                        cursor.executemany(insert_str,  tb_consumo.values.tolist())
+                        con.commit()
+                        con.close()
+                    else:
+                        print('Uso não aumentou do TRY')
+
+        except: 
+            print('except SE a conta não existe')
+
         print(
             "******** RASPAGEM DO CONSUMO E ATUALIZAÇÃO DO BANCO DE DADOS CONCLUÍDA ********")
         print()
