@@ -1,4 +1,3 @@
-from asyncio.windows_events import NULL
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from datetime import date
@@ -50,7 +49,7 @@ class scrap_master():
 
             # abrir navegador
             chrome_options = Options()
-            chrome_options.binary_location = "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe" # ---> ambiente de teste no Windows, desabilitar as 3 chrome.options abaixo
+            # chrome_options.binary_location = "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe" # ---> ambiente de teste no Windows, desabilitar as 3 chrome.options abaixo
             chrome_options.add_argument('--headless')
             chrome_options.add_argument('--no-sandbox')
             chrome_options.add_argument('--disable-dev-shm-usage')
@@ -63,7 +62,7 @@ class scrap_master():
             session = FuturesSession(max_workers = 100) 
             global nav   
             nav = session
-            nav = webdriver.Chrome( chrome_options=chrome_options,executable_path="C:\\ChromeDriver\\chromedriver.exe") # /usr/bin/chromedriver    ---> ambiente de teste Windows, trocar o path
+            nav = webdriver.Chrome( chrome_options=chrome_options,executable_path="/usr/bin/chromedriver") #    C:\\ChromeDriver\\chromedriver.exe ---> ambiente de teste Windows, trocar o path
             nav.get(site)
             
             time.sleep(3)
