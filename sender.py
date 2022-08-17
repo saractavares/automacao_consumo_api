@@ -9,7 +9,7 @@ class sender_email():
         print('Init DB')
         global con
         con = pyodbc.connect(
-            'DRIVER={ODBC Driver 17 for SQL Server};SERVER=tcp:f4f8ugzf66.database.windows.net;DATABASE=CONSUMO_DASH;UID=DataScience;PWD=brasil@1;Trusted_Connection=no')
+            'DRIVER={ODBC Driver 17 for SQL Server};SERVER=tcp:<SERVER=tcp>;DATABASE=<DATABASE>;UID=<UID>;PWD=<PWD>;Trusted_Connection=no')
 
         query = """SELECT TOP 1 [nome],[uso],[data_atual] FROM [dbo].[CONSUMO_API_RECURSO] ORDER BY id DESC"""
         bd = pd.read_sql_query(query, con)
