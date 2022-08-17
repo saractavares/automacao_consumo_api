@@ -12,7 +12,7 @@ print('entrou na api flask')
 def principal():
     
     
-    return "<center><a href ='https://consumoapirecurso.azurewebsites.net/api'><button type='button'><h2>Iniciar API</h2></button></a></center>"
+    return "<center><a href ='https://-----'><button type='button'><h2>Iniciar API</h2></button></a></center>"
     # return "<center><a href ='http://127.0.0.1:5000/api'><button type='button'><h2>Iniciar API</h2></button></a></center>"
     
 
