@@ -22,7 +22,7 @@ class scrap_master():
         try:
             global con
             con = pyodbc.connect(
-                'DRIVER={ODBC Driver 17 for SQL Server};SERVER=tcp:f4f8ugzf66.database.windows.net;DATABASE=CONSUMO_DASH;UID=DataScience;PWD=brasil@1;Trusted_Connection=no')
+                'DRIVER={ODBC Driver 17 for SQL Server};SERVER=tcp:SERVER;DATABASE=DATABASE;UID=UID;PWD=PWD;Trusted_Connection=no')
             print('Conexão com banco estabelecida')
         except:
             logger.error('Conexão com o banco de dados perdida.')
